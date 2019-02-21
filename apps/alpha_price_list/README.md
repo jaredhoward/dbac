@@ -27,3 +27,23 @@ Usage of ./dbacAlphaPriceList:
   -version
         display the version information
 ```
+
+### Mac Usage
+
+The Mac version of this application if intended to be ran from a command
+prompt. This ensures that the user is aware of what the application is doing.
+
+Note: The application can be ran from a Finder window by double clicking;
+this is fine, however, not ideal. When ran this way, a new terminal window
+is opened, the application runs with the default flags and the outputted file
+is typically placed in the user's root folder.
+
+### Windows Usage
+
+The Windows executable would typically ran by double clicking the application.
+If it is placed on the user's desktop, the outputted file would also be placed
+on the desktop.
+
+The application can also be called from a command prompt. This would allow the
+user to call the command flags.
+
