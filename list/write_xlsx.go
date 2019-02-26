@@ -1,44 +1,12 @@
 package list
 
 import (
-	"os"
-	"os/user"
-	"path"
 	"strconv"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
-func correctXLSXFilename(filename string) string {
-	if len(filename) == 0 {
-		filename = DefaultOutputAlphaPriceList
-	}
-
-	// If the OS shell did not expand the `~` from the command argument.
-	if filename[0] == '~' {
-		usr, _ := user.Current()
-		filename = usr.HomeDir + filename[1:]
-	}
-
-	fi, err := os.Lstat(filename)
-	// Expecting an error here if a new file will be created.
-	if err != nil {
-		// Ensure that the file is not a directory.
-		if os.IsPathSeparator(filename[len(filename)-1]) {
-			filename = path.Join(filename, DefaultOutputAlphaPriceList)
-		}
-	} else {
-		if fi.Mode().IsDir() {
-			filename = path.Join(filename, DefaultOutputAlphaPriceList)
-		}
-	}
-
-	return filename
-}
-
 func WriteXLSX(xlsxFilename string, list *List) error {
-	xlsxFilename = correctXLSXFilename(xlsxFilename)
-
 	xlsx := excelize.NewFile()
 
 	// Sheet information
