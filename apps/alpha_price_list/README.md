@@ -8,7 +8,8 @@ initially by providing an Excel document as the output.
 
 This app provides tools to:
 
-* retrieve the current AlphaPriceList.pdf that is provided on the website
+* retrieve the current or previous AlphaPriceList.pdf that is provided on the
+  website
 * read a saved price list
 * convert the PDF price list to an Excel XLSX version that includes:
   * automatic filters
@@ -21,11 +22,13 @@ This app provides tools to:
 
 Usage of ./dbacAlphaPriceList:
   -input string
-        input filename or URL of AlphaPriceList.pdf (default "https://abc.utah.gov/products/documents/AlphaPriceList.pdf")
+    	input filename or URL of AlphaPriceList.pdf (default "https://abc.utah.gov/products/documents/AlphaPriceList.pdf")
   -output string
-        output filename of the converted Excel file (default "./AlphaPriceList.xlsx")
+    	output filename of the converted Excel file (default "./AlphaPriceList.xlsx")
+  -previous
+    	retrieve the previous month's price list
   -version
-        display the version information
+    	display the version information
 ```
 
 ### Mac Usage
