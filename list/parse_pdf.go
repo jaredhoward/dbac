@@ -23,7 +23,7 @@ var reProductLine = regexp.MustCompile(`(?s)` +
 	`\n` +
 	`(?P<productName>[^\n]+)` +
 	`\n` +
-	`(?P<status>[1DSLXNAUT]+)` +
+	`(?P<statusCode>[1DSLXNAUTR]+)` +
 	`[\n ]*?` +
 	`(?P<costPerOunce>\d+\.\d+)` +
 	`(?:` +
@@ -39,9 +39,9 @@ var reProductLine = regexp.MustCompile(`(?s)` +
 	`(?P<comment>[^\n]+)` +
 	`)?` +
 	`\n` +
-	`(?P<category>[A-Z]{3})` +
+	`(?P<categoryCode>[A-Z]{3})` +
 	`[\n\t]+` +
-	`(?P<description>[^\n]+)`)
+	`(?P<categoryDescription>[^\n]+)`)
 
 func GetListFromPDFFile(inputPath string) (*List, error) {
 	f, err := os.Open(inputPath)
@@ -157,13 +157,13 @@ func parseAlphaPriceListProducts(list *List, txt string) error {
 			}
 		}
 
-		p := product.Product{
-			CSCode:      result["csCode"],
-			Status:      result["status"],
-			Name:        result["productName"],
-			Category:    result["category"],
-			Comment:     result["comment"],
-			Description: result["description"],
+		p := &product.Product{
+			CSCode:              result["csCode"],
+			Name:                result["productName"],
+			StatusCode:          result["statusCode"],
+			CategoryCode:        result["categoryCode"],
+			CategoryDescription: result["categoryDescription"],
+			Comment:             result["comment"],
 		}
 
 		p.Size, err = strconv.Atoi(result["size"])

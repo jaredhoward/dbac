@@ -24,10 +24,10 @@ const (
 
 type List struct {
 	EffectiveDate string
-	Products      []product.Product
+	Products      []*product.Product
 }
 
-func (l *List) AddProduct(p product.Product) {
+func (l *List) AddProduct(p *product.Product) {
 	l.Products = append(l.Products, p)
 }
 

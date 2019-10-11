@@ -1,20 +1,28 @@
 package product
 
+import (
+	"fmt"
+	"time"
+)
+
 type Product struct {
-	CSCode             string
-	Status             string
-	Name               string
-	Category           string
-	Comment            string
-	Description        string
-	Size               int
-	CasePack           int
-	CostPerOunce       float64
-	NewRetail          float64
-	CurrentRetail      float64
-	WarehouseInventory int
-	WarehouseOnOrder   int
-	Stores             []store
+	CSCode              string
+	Name                string
+	StatusCode          string
+	StatusDescription   string
+	CategoryCode        string
+	CategoryDescription string
+	Comment             string
+	Size                int
+	CasePack            int
+	CostPerOunce        float64
+	NewRetail           float64
+	CurrentRetail       float64
+	WarehouseInventory  int
+	WarehouseOnOrder    int
+	Stores              []store
+	StoresInventory     int
+	InventoryUpdated    time.Time
 }
 
 type store struct {
@@ -26,6 +34,35 @@ type store struct {
 	Phone   string
 }
 
+func ValidateProductCode(code string) error {
+	if code == "" {
+		return fmt.Errorf("Product code is empty")
+	}
+	return nil
+}
+
+func (p *Product) Validate() error {
+	return ValidateProductCode(p.CSCode)
+}
+
+func (p *Product) RetriveFullInfo() error {
+	if err := p.Validate(); err != nil {
+		return err
+	}
+
+	out, err := p.GetHTML()
+	if err != nil {
+		return err
+	}
+
+	err = p.ParseProductPage(out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (p *Product) QtyInStores() int {
 	count := 0
 	for _, s := range p.Stores {
@@ -35,34 +72,64 @@ func (p *Product) QtyInStores() int {
 }
 
 func (p *Product) StatusName() string {
-	switch p.Status {
+	switch p.StatusCode {
 	case "1":
 		return "General Distribution"
-	case "D":
-		return "Discontinued General Item"
-	case "S":
-		return "Special Order"
-	case "L":
-		return "Regular Limited Item"
-	case "X":
-		return "Limited Discontinued"
-	case "N":
-		return "Unavailable General Item"
 	case "A":
 		return "Limited Allocated Product"
-	case "U":
-		return "Unavailable Limited Item"
+	case "D":
+		return "Discontinued General Item"
+	case "L":
+		return "Regular Limited Item"
+	case "N":
+		return "Unavailable General Item"
+	case "R":
+		return "Reserved For Drawing"
+	case "S":
+		return "Special Order"
 	case "T":
 		return "Trial"
+	case "U":
+		return "Unavailable Limited Item"
+	case "X":
+		return "Limited Discontinued"
+	}
+	return ""
+}
+
+func (p *Product) StatusDescriptionToCode() string {
+	return statusDescriptionToCode(p.StatusDescription)
+}
+
+func statusDescriptionToCode(status string) string {
+	switch status {
+	case "General Distribution", "1  General Distribution":
+		return "1"
+	case "Limited Allocated Product", "A  Limited Dist with Allocated Quantity":
+		return "A"
+	case "Discontinued General Item", "D  Discontinued General Distribution":
+		return "D"
+	case "Regular Limited Item", "L  Limited Distribution":
+		return "L"
+	case "Unavailable General Item", "N  Unavailable General Item":
+		return "N"
+	case "Special Order", "S  Special Order":
+		return "S"
+	case "Trial":
+		return "T"
+	case "Unavailable Limited Item", "U  Unavailable Limited Distribution":
+		return "U"
+	case "Limited Discontinued", "X  Discontinued Limited Distribution":
+		return "X"
 	}
 	return ""
 }
 
 func (p *Product) GeneralCategory() string {
-	if len(p.Category) < 1 {
+	if len(p.CategoryCode) < 1 {
 		return ""
 	}
-	switch p.Category[:1] {
+	switch p.CategoryCode[:1] {
 	case "A":
 		return "SPIRITS"
 	case "C":
@@ -91,8 +158,8 @@ func (p *Product) GeneralCategory() string {
 	return ""
 }
 
-func (p *Product) CategoryDescription() string {
-	switch p.Category {
+func (p *Product) CategoryCodeToDescription() string {
+	switch p.CategoryCode {
 	case "ADF":
 		return "VODKA - BASIC"
 	case "ADM":
